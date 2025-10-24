@@ -1,61 +1,250 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Projeto CRUD - Livros, Autores e Assuntos (Laravel 12 + Docker + MySQL 8)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto é um sistema simples de gerenciamento de **Livros**, **Autores** e **Assuntos**, desenvolvido com **Laravel 12** e containerizado com **Docker** usando PHP 8.3 e MySQL 8.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🧱 Estrutura do Projeto
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+/backend
+ ├── app/
+ ├── bootstrap/
+ ├── config/
+ ├── database/
+ │   ├── migrations/
+ │   ├── seeders/
+ ├── routes/
+ │   └── web.php
+ ├── docker/
+ │   ├── Dockerfile
+ │   └── docker-compose.yml
+ ├── .env
+ ├── composer.json
+ └── README.md
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚙️ Tecnologias Utilizadas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **PHP 8.3**
+- **Laravel 12**
+- **MySQL 8.0**
+- **Composer**
+- **Docker e Docker Compose**
+- **Eloquent ORM**
+- **Blade Templates (ou API REST)**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Configuração e Execução com Docker
 
-## Laravel Sponsors
+### 1️⃣ Clonar o repositório
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/seu-usuario/projeto-editora.git
+cd projeto-editora/backend
+```
 
-### Premium Partners
+### 2️⃣ Criar o arquivo `.env`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Crie o arquivo `.env` com base no `.env.example`:
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Atualize as variáveis do banco:
 
-## Code of Conduct
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=editora
+DB_USERNAME=root
+DB_PASSWORD=root
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3️⃣ Subir os containers
 
-## Security Vulnerabilities
+```bash
+docker-compose up -d --build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Isso criará os containers:
+- **laravel-app** → PHP 8.3
+- **mysql** → MySQL 8
+- **phpmyadmin** (opcional) → interface web para o banco
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🧩 Estrutura do Banco de Dados
+
+As principais tabelas:
+
+- **livros** (`Codl`, `Titulo`, `Editora`, `Edicao`, `AnoPublicacao`)
+- **autores** (`CodAu`, `Nome`)
+- **assuntos** (`CodAs`, `Descricao`)
+- **livro_autor** (tabela pivô)
+- **livro_assunto** (tabela pivô)
+
+---
+
+## 🧰 Comandos Úteis
+
+### Instalar dependências
+```bash
+docker exec -it laravel-app composer install
+```
+
+### Gerar key do Laravel
+```bash
+docker exec -it laravel-app php artisan key:generate
+```
+
+### Rodar migrations
+```bash
+docker exec -it laravel-app php artisan migrate
+```
+
+### Rodar seeders (dados iniciais)
+```bash
+docker exec -it laravel-app php artisan db:seed
+```
+
+### Acessar o container PHP
+```bash
+docker exec -it laravel-app bash
+```
+
+### Logs do Laravel
+```bash
+docker logs laravel-app
+```
+
+---
+
+## 🌐 Acesso
+
+| Serviço       | URL                              |
+|----------------|----------------------------------|
+| Laravel App    | http://localhost:8000            |
+| PhpMyAdmin     | http://localhost:8080            |
+| MySQL          | localhost:3306                   |
+
+---
+
+## 📄 Rotas Principais (CRUD)
+
+### Livros
+| Método | Rota             | Descrição            |
+|--------|------------------|----------------------|
+| GET    | `/livros`        | Lista todos os livros |
+| GET    | `/livros/{id}`   | Detalha um livro     |
+| POST   | `/livros`        | Cria um novo livro   |
+| PUT    | `/livros/{id}`   | Atualiza um livro    |
+| DELETE | `/livros/{id}`   | Remove um livro      |
+
+### Autores
+| Método | Rota             | Descrição             |
+|--------|------------------|-----------------------|
+| GET    | `/autores`       | Lista autores         |
+| POST   | `/autores`       | Cria novo autor       |
+| PUT    | `/autores/{id}`  | Atualiza autor        |
+| DELETE | `/autores/{id}`  | Remove autor          |
+
+### Assuntos
+| Método | Rota             | Descrição              |
+|--------|------------------|------------------------|
+| GET    | `/assuntos`      | Lista assuntos         |
+| POST   | `/assuntos`      | Cria novo assunto      |
+| PUT    | `/assuntos/{id}` | Atualiza assunto       |
+| DELETE | `/assuntos/{id}` | Remove assunto         |
+
+---
+
+## 🐳 Exemplo de `docker-compose.yml`
+
+```yaml
+version: '3.8'
+
+services:
+  laravel-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: editora
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  db_data:
+```
+
+---
+
+## 🐘 Exemplo de `Dockerfile`
+
+```dockerfile
+FROM php:8.3-apache
+
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y     libpng-dev libjpeg-dev libfreetype6-dev zip git unzip libonig-dev libxml2-dev     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+COPY . .
+
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+EXPOSE 80
+CMD ["apache2-foreground"]
+```
+
+---
+
+## 🧑‍💻 Contribuição
+
+1. Faça um fork do projeto  
+2. Crie uma branch (`git checkout -b feature/nome-da-feature`)  
+3. Commit suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)  
+4. Faça push da branch (`git push origin feature/nome-da-feature`)  
+5. Crie um Pull Request  
+
+---
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT.  
+Sinta-se livre para usar e modificar conforme necessário.
+
+---
+
+👨‍💻 **Autor:** Daniel Oliveira  
+📧 **E-mail:** danirecords@terra.com  
+🔗 **GitHub:** [https://github.com/danirecords](https://github.com/danirecords)
