@@ -6,23 +6,24 @@ use App\Services\LivroService;
 use Illuminate\Http\Request;
 use App\Http\Requests\LivroRequest;
 use App\DTOs\LivroDto;
+use App\Models\Autor;
 
 /**
  * Class LivrosController
  *
- * Controlador responsável por gerenciar os livros, realizando operações de CRUD.
+ * Controlador responsável por gerenciar os livros, realizando operações de CRUD
+ * e o relacionamento com autores.
  *
  * @package App\Http\Controllers
  */
 class LivrosController extends Controller
 {
-
-     /**
-     * @var service Serviço responsável pela lógica de negócios dos livros.
+    /**
+     * @var LivroService Serviço responsável pela lógica de negócios dos livros.
      */
     protected $service;
 
-     /**
+    /**
      * Construtor do controlador.
      *
      * @param LivroService $service Instância do serviço de livros.
@@ -32,18 +33,19 @@ class LivrosController extends Controller
         $this->service = $service;
     }
 
-     /**
-     * Exibe a lista de todos os livros.
+    /**
+     * Exibe a lista de todos os livros com seus autores.
      *
-     * @return \Illuminate\Http\JsonResponse Lista de livros em formato JSON.
+     * @return \Illuminate\Http\JsonResponse Lista de livros com autores.
      */
     public function index()
     {
-        return response()->json($this->service->getAll());
+        $livros = $this->service->getAllWithAutores();
+        return response()->json($livros);
     }
 
-     /**
-     * Cria um novo livro com base nos dados fornecidos.
+    /**
+     * Cria um novo livro e associa autores, se fornecidos.
      *
      * @param LivroRequest $request Requisição validada contendo os dados do livro.
      * @return \Illuminate\Http\JsonResponse Livro criado em formato JSON.
@@ -51,19 +53,27 @@ class LivrosController extends Controller
     public function store(LivroRequest $request)
     {
         $dto = LivroDto::fromArray($request->validated());
-        $livro = $this->service->create($dto);
-        return response()->json($livro, 201);
+
+        $autores = $request->input('autores', []);
+        $assuntos = $request->input('assuntos', []);
+
+        $livro = $this->service->create($dto, $autores, $assuntos);
+
+        return response()->json(
+            $livro->load(['autores', 'assuntos']),
+            201
+        );
     }
 
-     /**
-     * Exibe um livro específico pelo seu ID.
+    /**
+     * Exibe um livro específico pelo seu ID, incluindo autores.
      *
      * @param int $id ID do livro.
      * @return \Illuminate\Http\JsonResponse Livro encontrado ou mensagem de erro.
      */
     public function show($id)
     {
-        $livro = $this->service->getById($id);
+        $livro = $this->service->getByIdWithRelations($id);
         if (!$livro) {
             return response()->json(['message' => 'Livro não encontrado'], 404);
         }
@@ -71,7 +81,7 @@ class LivrosController extends Controller
     }
 
     /**
-     * Atualiza os dados de um livro existente.
+     * Atualiza os dados de um livro existente e seus autores.
      *
      * @param LivroRequest $request Requisição validada com os novos dados.
      * @param int $id ID do livro a ser atualizado.
@@ -80,11 +90,19 @@ class LivrosController extends Controller
     public function update(LivroRequest $request, $id)
     {
         $dto = LivroDto::fromArray($request->validated());
-        $livro = $this->service->update($id, $dto);
-        return response()->json($livro);
+
+        $autores = $request->input('autores', []);
+        $assuntos = $request->input('assuntos', []);
+
+        $livro = $this->service->update($id, $dto, $autores, $assuntos);
+
+        return response()->json(
+            $livro->load(['autores', 'assuntos']),
+            201
+        );
     }
 
-     /**
+    /**
      * Remove um livro do sistema.
      *
      * @param int $id ID do livro a ser removido.

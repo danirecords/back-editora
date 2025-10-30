@@ -27,6 +27,8 @@ class LivroDto
         public string $Editora,
         public int $Edicao,
         public string $AnoPublicacao,
+      //  public array $autores = [],
+     //   public array $assuntos = []
     ) {}
 
     /**
@@ -42,7 +44,9 @@ class LivroDto
             $livro['Titulo'],
             $livro['Editora'],
             $livro['Edicao'],
-            $livro['AnoPublicacao']
+            $livro['AnoPublicacao'],
+          //  $livro['autores'] ?? [],
+          //  $livro['assuntos'] ?? []
         );
     }
 
@@ -58,7 +62,7 @@ class LivroDto
             'Titulo' => $this->Titulo,
             'Editora' => $this->Editora,
             'Edicao' => $this->Edicao,
-            'AnoPublicacao' => $this->AnoPublicacao,
+            'AnoPublicacao' => $this->AnoPublicacao
         ];
     }
 }

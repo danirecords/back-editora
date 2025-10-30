@@ -39,5 +39,15 @@ class Autores extends Model
      */
     protected $fillable = ['Nome'];
 
+    /**
+     * Relacionamento muitos-para-muitos entre livros e autor.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function livros()
+    {
+        return $this->belongsToMany(Livro::class, 'livro_autor', 'Autor_CodAu', 'Livro_Codl');
+    }
+
 
 }

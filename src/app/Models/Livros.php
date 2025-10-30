@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $Edicao Número da edição do livro.
  * @property string $AnoPublicacao Ano de publicação do livro.
  *
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Autor[] $autores Autores associados ao livro.
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Autores[] $autores Autores associados ao livro.
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Assunto[] $assuntos Assuntos associados ao livro.
  */
 class Livros extends Model
@@ -51,7 +51,7 @@ class Livros extends Model
      */
     public function autores()
     {
-        return $this->belongsToMany(Autor::class, 'livro_autor', 'Livro_Codl', 'Autor_CodAu');
+        return $this->belongsToMany(Autores::class, 'livro_autor', 'Livro_Codl', 'Autor_CodAu');
     }
 
     /**

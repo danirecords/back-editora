@@ -1,78 +1,70 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Livros;
 use App\DTOs\LivroDto;
+use App\DTOs\AutorDto;
+use App\DTOs\AssuntoDto;
 
-/**
- * Class LivroService
- *
- * Serviço responsável por encapsular a lógica de negócios relacionada aos livros.
- * Atua como intermediário entre o controlador e o modelo.
- *
- * @package App\Services
- */
 class LivroService
 {
-     /**
-     * Retorna todos os livros cadastrados.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|Livros[]
-     */
     public function getAll()
     {
-        return Livros::all();
+        return Livros::with(['autores', 'assuntos'])->get();
     }
 
-    /**
-     * Busca um livro pelo seu ID.
-     *
-     * @param int $id ID do livro.
-     * @return Livros|null Livro encontrado ou null se não existir.
-     */
+    public function getAllWithAutores()
+    {
+        return Livros::with('autores')->get();
+    }
+
     public function getById(int $id)
     {
-        return Livros::find($id);
+        return Livros::with(['autores', 'assuntos'])->find($id);
     }
 
-     /**
-     * Cria um novo livro a partir de um DTO.
-     *
-     * @param LivroDto $dto Objeto DTO contendo os dados do livro.
-     * @return Livros Livro criado.
-     */
-    public function create(LivroDto $dto)
+    public function getByIdWithRelations(int $id)
     {
-        return Livros::create($dto->toArray());
+        return Livros::with(['autores', 'assuntos'])->find($id);
     }
 
-    /**
-     * Atualiza os dados de um livro existente.
-     *
-     * @param int $id ID do livro a ser atualizado.
-     * @param LivroDto $dto Objeto DTO com os novos dados do livro.
-     * @return Livros Livro atualizado.
-     *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException Se o livro não for encontrado.
-     */
-    public function update($id, LivroDto $dto)
+    public function create(LivroDto $dto, array $autores = [], array $assuntos = [])
     {
-        $livro = Livros::findOrFail($id);
-        $livro->update($dto->toArray());
+        $livro = Livros::create($dto->toArray());
+
+        if (!empty($autores)) {
+            $livro->autores()->sync($autores);
+        }
+
+        if (!empty($assuntos)) {
+            $livro->assuntos()->sync($assuntos);
+        }
+
         return $livro;
     }
 
-     /**
-     * Exclui um livro pelo seu ID.
-     *
-     * @param int $id ID do livro a ser excluído.
-     * @return bool|null Retorna true em caso de sucesso, false ou null em caso de falha.
-     *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException Se o livro não for encontrado.
-     */
+    public function update($id, LivroDto $dto, array $autores = [], array $assuntos = [])
+    {
+        $livro = Livros::findOrFail($id);
+        $livro->update($dto->toArray());
+
+        if (!empty($autores)) {
+            $livro->autores()->sync($autores);
+        }
+
+        if (!empty($assuntos)) {
+            $livro->assuntos()->sync($assuntos);
+        }
+
+        return $livro;
+    }
+
     public function delete(int $id)
     {
         $livro = Livros::findOrFail($id);
+        $livro->autores()->detach();
+        $livro->assuntos()->detach();
         return $livro->delete();
     }
 }
